@@ -446,7 +446,7 @@ defmodule Instructor do
   end
 
   defp do_chat_completion(response_model, params, config) do
-    {return_full_response?, params} = Keyword.pop(params, :return_full_response, false)
+    return_full_response? = Keyword.get(config, :return_full_response, false)
 
     validation_context = Keyword.get(params, :validation_context, %{})
     max_retries = Keyword.get(params, :max_retries)
@@ -499,7 +499,11 @@ defmodule Instructor do
 
           do_chat_completion(response_model, params, config)
         else
-          {:error, changeset}
+          if return_full_response? do
+            {:error, raw_response, changeset}
+          else
+            {:error, changeset}
+          end
         end
 
       {:error, reason} ->
