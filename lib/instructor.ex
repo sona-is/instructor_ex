@@ -118,7 +118,9 @@ defmodule Instructor do
   """
   @spec chat_completion(Keyword.t(), any()) ::
           {:ok, Ecto.Schema.t()}
+          | {:ok, map(), Ecto.Schema.t()}
           | {:error, Ecto.Changeset.t()}
+          | {:error, map(), Ecto.Changeset.t()}
           | {:error, String.t()}
           | stream()
   def chat_completion(params, config \\ nil) do
