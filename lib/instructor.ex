@@ -450,6 +450,7 @@ defmodule Instructor do
     max_retries = Keyword.get(params, :max_retries)
     mode = Keyword.get(params, :mode, :tools)
     params = params_for_mode(mode, response_model, params)
+    return_full_response? = Keyword.get(params, :return_full_response, false)
 
     model =
       if is_ecto_schema(response_model) do
@@ -463,7 +464,11 @@ defmodule Instructor do
            {cast_all(model, params), raw_response},
          {%Ecto.Changeset{valid?: true} = changeset, _raw_response} <-
            {call_validate(response_model, changeset, validation_context), raw_response} do
-      {:ok, changeset |> Ecto.Changeset.apply_changes()}
+      if return_full_response? do
+        {:ok, raw_response, changeset |> Ecto.Changeset.apply_changes()}
+      else
+        {:ok, changeset |> Ecto.Changeset.apply_changes()}
+      end
     else
       {%Ecto.Changeset{} = changeset, raw_response} ->
         if max_retries > 0 do
