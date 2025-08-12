@@ -446,11 +446,12 @@ defmodule Instructor do
   end
 
   defp do_chat_completion(response_model, params, config) do
+    {return_full_response?, params} = Keyword.pop(params, :return_full_response, false)
+
     validation_context = Keyword.get(params, :validation_context, %{})
     max_retries = Keyword.get(params, :max_retries)
     mode = Keyword.get(params, :mode, :tools)
     params = params_for_mode(mode, response_model, params)
-    return_full_response? = Keyword.get(params, :return_full_response, false)
 
     model =
       if is_ecto_schema(response_model) do
